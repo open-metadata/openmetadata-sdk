@@ -1,0 +1,3 @@
+# Label when interacting with go client
+go-client:
+  - "openmetadata-go-client/**/*"
