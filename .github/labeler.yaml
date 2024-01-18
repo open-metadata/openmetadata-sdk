@@ -1,0 +1,4 @@
+# Label when interacting with go client
+go-client:
+  - changed-files:
+    - any-glob-to-any-file: openmetadata-go-client/**/*

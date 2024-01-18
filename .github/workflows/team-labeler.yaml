@@ -11,7 +11,8 @@ jobs:
         runs-on: ubuntu-latest
         name: Team Label
         steps:
-            - uses: JulienKode/team-labeler-action@v0.1.1
+            - uses: actions/checkout@v4
+            - uses: JulienKode/team-labeler-action@v1.1.0
               with:
                 repo-token: "${{ secrets.GITHUB_TOKEN }}"
 

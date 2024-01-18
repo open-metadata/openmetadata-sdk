@@ -32,14 +32,6 @@ jobs:
                 large-packages: false
                 swap-storage: true
                 docker-images: false
-            - name: Wait for the labeler
-              uses: lewagon/wait-on-check-action@v1.3.3
-              if: ${{ github.event_name == 'pull_request_target' }}
-              with:
-                  ref: ${{ github.event.pull_request.head.sha }}
-                  check-name: Team Label
-                  repo-token: ${{ secrets.GITHUB_TOKEN }}
-                  wait-interval: 90
             - name: Verify PR labels
               uses: jesusvasquez333/verify-pr-label-action@v1.4.0
               if: ${{ github.event_name == 'pull_request_target' }}
@@ -58,10 +50,10 @@ jobs:
               with:
                 java-version: '17'
                 distribution: 'temurin'
-            - name: Set up Python 3.10
+            - name: Set up Python 3.10.13
               uses: actions/setup-python@v4
               with:
-                python-version: 3.10
+                python-version: 3.10.13
             - name: Install Ubuntu dependencies
               run: |
                 sudo apt-get update && sudo apt-get install -y unixodbc-dev python3-venv librdkafka-dev gcc libsasl2-dev build-essential libssl-dev libffi-dev \
@@ -89,14 +81,17 @@ jobs:
                 command: cd open-metadata && ./docker/run_local_docker.sh -m no-ui
             # end: setup
 
-            - uses: actions/checkout@v4
+            - name: Checkout SDK Repo
+              uses: actions/checkout@v4
+              with:
+                path: openmetadata-sdk
             - name: Setup Go ${{ matrix.go-version }}
               uses: actions/setup-go@v4
               with:
                 go-version: ${{ matrix.go-version }}
             - name: Get dependencies
               run: |
-                make go_install_tools
+                cd openmetadata-sdk && make go_install_tools
             - name: Run tests
               run: |
-                make go_tests_ci
+                cd openmetadata-sdk && make go_tests_ci
