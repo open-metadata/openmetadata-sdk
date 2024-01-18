@@ -34,14 +34,14 @@ jobs:
                 large-packages: false
                 swap-storage: true
                 docker-images: false
-            - name: Verify PR labels
-              uses: jesusvasquez333/verify-pr-label-action@v1.4.0
-              if: ${{ github.event_name == 'pull_request' }}
-              with:
-                github-token: '${{ secrets.GITHUB_TOKEN }}'
-                valid-labels: 'safe to test'
-                pull-request-number: '${{ github.event.pull_request.number }}'
-                disable-reviews: true  # To not auto approve changes
+            # - name: Verify PR labels
+            #   uses: jesusvasquez333/verify-pr-label-action@v1.4.0
+            #   if: ${{ github.event_name == 'pull_request' }}
+            #   with:
+            #     github-token: '${{ secrets.GITHUB_TOKEN }}'
+            #     valid-labels: 'safe to test'
+            #     pull-request-number: '${{ github.event.pull_request.number }}'
+            #     disable-reviews: true  # To not auto approve changes
             - name: Checkout OM Repo
               uses: actions/checkout@v4
               with:
