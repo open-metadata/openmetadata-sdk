@@ -1,14 +1,16 @@
 name: go-tests
+# on:
+#     workflow_dispatch:
+#     push:
+#         branches:
+#             - main
+#             - 'v[0-9]+.[0-9]+.[0-9]+'
+#     pull_request_target:
+#         types: [labeled, opened, synchronize, reopened]
+#         paths:
+#             - "openmetadata-go-client/**"
 on:
-    workflow_dispatch:
-    push:
-        branches:
-            - main
-            - 'v[0-9]+.[0-9]+.[0-9]+'
-    pull_request_target:
-        types: [labeled, opened, synchronize, reopened]
-        paths:
-            - "openmetadata-go-client/**"
+  pull_request:
 
 permissions:
     contents: read
@@ -58,10 +60,10 @@ jobs:
               with:
                 java-version: '17'
                 distribution: 'temurin'
-            - name: Set up Python 3.10
+            - name: Set up Python 3.10.13
               uses: actions/setup-python@v4
               with:
-                python-version: 3.10
+                python-version: 3.10.13
             - name: Install Ubuntu dependencies
               run: |
                 sudo apt-get update && sudo apt-get install -y unixodbc-dev python3-venv librdkafka-dev gcc libsasl2-dev build-essential libssl-dev libffi-dev \
