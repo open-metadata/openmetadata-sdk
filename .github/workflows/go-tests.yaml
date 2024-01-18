@@ -91,7 +91,8 @@ jobs:
                 command: cd open-metadata && ./docker/run_local_docker.sh -m no-ui
             # end: setup
 
-            - uses: actions/checkout@v4
+            - name: Checkout SDK Repo
+              uses: actions/checkout@v4
               with:
                 path: openmetadata-sdk
             - name: Setup Go ${{ matrix.go-version }}
