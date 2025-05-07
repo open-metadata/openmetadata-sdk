@@ -6,7 +6,6 @@ import (
 	"reflect"
 )
 
-
 func Deserialize(jsonResponse map[string]any, targetType any) (any, error) {
 	if reflect.TypeOf(targetType).Kind() != reflect.Ptr {
 		return nil, fmt.Errorf("targetType must be a pointer to a struct")
