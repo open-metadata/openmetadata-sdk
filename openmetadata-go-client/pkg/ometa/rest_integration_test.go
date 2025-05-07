@@ -1,12 +1,10 @@
-//go:build integration
-// +build integration
-
 package ometa_test
 
 import (
 	"fmt"
 	"testing"
 
+	"github.com/open-metadata/openmetadata-sdk/openmetadata-go-client/pkg/ometa"
 	"github.com/open-metadata/openmetadata-sdk/openmetadata-go-client/pkg/ometa/testdata"
 	"github.com/stretchr/testify/assert"
 )
@@ -22,6 +20,15 @@ func TestListTables(t *testing.T) {
 	assert.Equal(t, ok, true, "data key should exist")
 	assert.NotNil(t, data, "body[data] should not be nil")
 	assert.Equal(t, len(data), 10, "lenght of body[data] should be 10")
+
+	tables, err := ometa.DeserializeSlice(data, &ometa.Table{})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	tableSlice, ok := tables.([]ometa.Table)
+	assert.True(t, ok, "table should be of type []ometa.Table")
+	assert.Equal(t, len(tableSlice), 10, "lenght of table should be 10")
 }
 
 func TestListTablesWithQueryParams(t *testing.T) {
@@ -56,6 +63,16 @@ func TestGetTableByName(t *testing.T) {
 	assert.True(t, ok, "`name` key should exist")
 	assert.NotNil(t, body, "body should not be nil")
 	assert.Equal(t, name, "dim.shop", "name should be `dim.shop`")
+	table, err := ometa.Deserialize(body, &ometa.Table{})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	table, ok = table.(*ometa.Table)
+	if !ok {
+		t.Fatalf("Expected type *ometa.Table, got %T", table)
+	}
+	assert.True(t, ok, "table should be of type ometa.Table")
 }
 
 func TestCreateTable(t *testing.T) {
@@ -140,6 +157,53 @@ func TestDeleteTable(t *testing.T) {
 	path = fmt.Sprintf("tables/%s", id)
 	body, _ := restFixture.Get(path, nil, nil, nil)
 	assert.Equal(t, body["code"].(float64), 404.0, "statusCode should be 404")
+}
+
+func TestAddLineage(t *testing.T) {
+	restFixture := testdata.RestFixture()
+	path := "tables"
+	body, err := restFixture.Get(path, nil, nil, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	data, ok := body["data"].([]interface{})
+	if !ok {
+		t.Fatal("data key should exist")
+	}
+	tables, err := ometa.DeserializeSlice(data, &ometa.Table{})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	tableSlice, ok := tables.([]ometa.Table)
+	if !ok {
+		t.Fatal("tableSlice should be of type []ometa.Table")
+	}
+	fromTable := tableSlice[0]
+	toTable := tableSlice[1]
+
+	addLineage := ometa.AddLineage{
+		Edge: ometa.EntitiesEdge{
+			FromEntity: ometa.EntityReference{
+				Id:   fromTable.Id,
+				Type: "table",
+			},
+			ToEntity: ometa.EntityReference{
+				Id:   toTable.Id,
+				Type: "table",
+			},
+		},
+	}
+
+	path = "lineage"
+	payload, err := ometa.Serialize(addLineage)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = restFixture.Put(path, payload, nil, nil, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
 }
 
 func createTable() map[string]any {
