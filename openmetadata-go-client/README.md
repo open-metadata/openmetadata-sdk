@@ -126,6 +126,6 @@ response and request can respectively be deserialized and serialized into Go str
 
 Note that SerDeser have a variation to perform the action on a single or a list of object:
 - `Deserialize`
-- `Deserialize`
+- `DeserializeSlice`
 - `Serialize`
 - `SerializeSlice`

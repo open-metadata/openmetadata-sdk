@@ -22,7 +22,7 @@ func TestListTables(t *testing.T) {
 	data, ok := body["data"].([]interface{})
 	assert.Equal(t, ok, true, "data key should exist")
 	assert.NotNil(t, data, "body[data] should not be nil")
-	assert.Equal(t, len(data), 10, "lenght of body[data] should be 10")
+	assert.Equal(t, len(data), 10, "length of body[data] should be 10")
 
 	tables, err := ometa.DeserializeSlice(data, &ometa.Table{})
 	if err != nil {
@@ -31,7 +31,7 @@ func TestListTables(t *testing.T) {
 
 	tableSlice, ok := tables.([]ometa.Table)
 	assert.True(t, ok, "table should be of type []ometa.Table")
-	assert.Equal(t, len(tableSlice), 10, "lenght of table should be 10")
+	assert.Equal(t, len(tableSlice), 10, "length of table should be 10")
 }
 
 func TestListTablesWithQueryParams(t *testing.T) {
@@ -48,7 +48,7 @@ func TestListTablesWithQueryParams(t *testing.T) {
 	data, ok := body["data"].([]interface{})
 	assert.True(t, ok, "data key should exist")
 	assert.NotNil(t, data, "body[data] should not be nil")
-	assert.Equal(t, len(data), 2, "lenght of body[data] should be 2")
+	assert.Equal(t, len(data), 2, "length of body[data] should be 2")
 
 	tableOne := data[0].(map[string]interface{})
 	_, ok = tableOne["tableConstraints"]
@@ -116,7 +116,7 @@ func TestUpdateTablePut(t *testing.T) {
 		t.Fatal(err)
 	}
 	columns := body["columns"].([]interface{})
-	assert.Equal(t, len(columns), 3, "lenght of columns should be 3")
+	assert.Equal(t, len(columns), 3, "length of columns should be 3")
 	deleteTable(table["id"].(string))
 }
 
