@@ -91,6 +91,10 @@ func (rest Rest) dispatchRequest() (map[string]any, error) {
 		return nil, err
 	}
 
+	if len(rawBody) == 0 {
+		return nil, nil
+	}
+
 	var body map[string]any
 	err = json.Unmarshal(rawBody, &body)
 	if err != nil {
