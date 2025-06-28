@@ -15,10 +15,10 @@ func (restConfig *RestConfig) setDefaults() {
 	if restConfig.APIVersion == "" {
 		restConfig.APIVersion = "v1"
 	}
-	if restConfig.Retry == 0 || restConfig.Retry < 0 {
+	if restConfig.Retry <= 0 {
 		restConfig.Retry = 3
 	}
-	if restConfig.RetryWait == 0 || restConfig.RetryWait < 0 {
+	if restConfig.RetryWait <= 0 {
 		restConfig.RetryWait = 30
 	}
 	if restConfig.RetryCodes == nil {

@@ -7077,9 +7077,9 @@ type FieldBoost struct {
 
 // FieldChange defines model for FieldChange.
 type FieldChange struct {
-	Name     *string                 `json:"name,omitempty"`
-	NewValue *string                  `json:"newValue,omitempty"`
-	OldValue *string                  `json:"oldValue,omitempty"`
+	Name     *string `json:"name,omitempty"`
+	NewValue *string `json:"newValue,omitempty"`
+	OldValue *string `json:"oldValue,omitempty"`
 }
 
 // FieldComparatorSource defines model for FieldComparatorSource.
