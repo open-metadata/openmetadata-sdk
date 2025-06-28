@@ -68,3 +68,17 @@ func TestSetQueryParameter(t *testing.T) {
 	rest.setQueryParams(queryParams)
 	assert.Equal(t, rest.req.URL.RawQuery, "deleted=false&limit=10", "query parameters should be equal")
 }
+
+func TestNewRestSetsDefaults(t *testing.T) {
+	restConfig := &RestConfig{
+		BaseURL: "http://localhost:8080",
+	}
+	rest := NewRest(restConfig)
+
+	assert.NotNil(t, rest.restConfig, "config should not be nil")
+	assert.Equal(t, "http://localhost:8080", rest.restConfig.BaseURL, "BaseURL should be set")
+	assert.NotZero(t, rest.restConfig.APIVersion, "API version should have a default value")
+	assert.NotZero(t, rest.restConfig.Retry, "Retry should have a default value")
+	assert.NotZero(t, rest.restConfig.RetryWait, "RetryWait should have a default value")
+	assert.NotEmpty(t, rest.restConfig.RetryCodes, "RetryCodes should have a default")
+}

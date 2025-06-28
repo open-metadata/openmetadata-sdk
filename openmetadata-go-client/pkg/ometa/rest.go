@@ -22,6 +22,8 @@ type Rest struct {
 
 // NewRest used to Instantiate a new Rest client
 func NewRest(restConfig *RestConfig) *Rest {
+	// Ensure defaults are applied even if RestConfig was created manually
+	restConfig.setDefaults()
 	bearerAuthString := fmt.Sprintf("%s %s", restConfig.AuthTokenMode, restConfig.AccessToken)
 
 	return &Rest{
