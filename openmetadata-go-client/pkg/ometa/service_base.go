@@ -106,10 +106,12 @@ func patch[T any](
 		return &result, nil
 }
 
-func delete(
+func del(
 	ctx context.Context,
 	b Backend,
-	path string) error {
-		_, err := b.Call(ctx, "DELETE", path, nil, nil)
+	path string,
+	params any) error {
+		qp := EncodeParams(params)
+		_, err := b.Call(ctx, "DELETE", path, nil, qp)
 		return err
 }

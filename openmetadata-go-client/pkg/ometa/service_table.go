@@ -6,7 +6,7 @@ import (
 	"iter"
 )
 
-const tableBasePath = "/tables"
+const tableBasePath = "tables"
 
 type TableService struct {
 	backend Backend
@@ -40,11 +40,11 @@ func (s *TableService) Patch(ctx context.Context, id string, ops []JSONPatchOp) 
 }
 
 func (s *TableService) Delete(ctx context.Context, id string, params *DeleteTableParams) error {
-    return delete(ctx, s.backend, fmt.Sprintf("%s/%s", tableBasePath, id))
+    return del(ctx, s.backend, fmt.Sprintf("%s/%s", tableBasePath, id), params)
 }
 
 func (s *TableService) DeleteByName(ctx context.Context, fqn string, params *DeleteTable1Params) error {
-    return delete(ctx, s.backend, fmt.Sprintf("%s/name/%s", tableBasePath, fqn))
+    return del(ctx, s.backend, fmt.Sprintf("%s/name/%s", tableBasePath, fqn), params)
 }
 
 func (s *TableService) ListVersions(ctx context.Context, id string) (*EntityHistory, error) {
