@@ -195,7 +195,6 @@ func TestListTableVersions(t *testing.T) {
 	ctx := context.Background()
 	table := createTestTable(t, ctx, "test_versions")
 
-	// Patch to create a second version
 	client.Tables.Patch(ctx, table.Id.String(), []ometa.JSONPatchOp{
 		{Op: "add", Path: "/description", Value: "v2"},
 	})
@@ -246,7 +245,6 @@ func TestRestoreTable(t *testing.T) {
 		)
 	})
 
-	// Soft delete
 	err = client.Tables.Delete(ctx, table.Id.String(), &ometa.DeleteTableParams{
 		HardDelete: ometa.Bool(false),
 	})
@@ -254,7 +252,6 @@ func TestRestoreTable(t *testing.T) {
 		t.Fatalf("failed to soft delete table: %v", err)
 	}
 
-	// Restore
 	restored, err := client.Tables.Restore(ctx, &ometa.RestoreEntity{
 		Id: table.Id,
 	})

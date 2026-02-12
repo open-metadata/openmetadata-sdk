@@ -25,8 +25,6 @@ func TestServiceCoverage(t *testing.T) {
 	swaggerPaths := parseSwaggerPaths(t, swaggerPath)
 	serviceBasePaths := scanServiceBasePaths(t)
 
-	// Service → Swagger: every service basePath must appear in the swagger.
-	// A service is "found" if at least one swagger path equals or starts with its basePath.
 	var staleServices []string
 	for basePath := range serviceBasePaths {
 		found := false
@@ -45,9 +43,6 @@ func TestServiceCoverage(t *testing.T) {
 		t.Errorf("service with basePath %q has no matching swagger resource", s)
 	}
 
-	// Swagger → Service: check which swagger paths are covered by a service.
-	// A swagger path is "covered" if any service basePath equals it or is a prefix of it.
-	// Uncovered paths are grouped by root resource and logged (informational only).
 	uncoveredRoots := make(map[string]bool)
 	for _, sp := range swaggerPaths {
 		covered := false
@@ -75,8 +70,6 @@ func TestServiceCoverage(t *testing.T) {
 		len(swaggerPaths), len(serviceBasePaths), len(staleServices), len(roots))
 }
 
-// parseSwaggerPaths reads a swagger.json and returns all paths with the API
-// version prefix stripped (e.g., "/api/v1/tables/{id}" → "tables/{id}").
 func parseSwaggerPaths(t *testing.T, path string) []string {
 	t.Helper()
 
@@ -102,10 +95,6 @@ func parseSwaggerPaths(t *testing.T, path string) []string {
 	return paths
 }
 
-// stripVersionPrefix removes the API version prefix from a swagger path.
-//
-//	/api/v1/tables/{id} → tables/{id}
-//	/v1/tables          → tables
 func stripVersionPrefix(rawPath string) string {
 	path := rawPath
 	for i := 0; i < len(path)-3; i++ {
@@ -118,13 +107,6 @@ func stripVersionPrefix(rawPath string) string {
 	return strings.TrimPrefix(path, "/")
 }
 
-// extractResourceBase derives the base resource path from a version-stripped
-// swagger path by collecting segments before the first {param} and stripping
-// trailing action keywords. Used only for grouping uncovered paths.
-//
-//	tables/{id}/versions/{version} → tables
-//	tables/async                   → tables
-//	services/databaseServices/{id} → services/databaseServices
 func extractResourceBase(path string) string {
 	segments := strings.Split(path, "/")
 	var base []string
@@ -150,8 +132,6 @@ func extractResourceBase(path string) string {
 	return strings.Join(base, "/")
 }
 
-// scanServiceBasePaths reads all service_*.go files in the package directory
-// and extracts their basePath constants.
 func scanServiceBasePaths(t *testing.T) map[string]bool {
 	t.Helper()
 
