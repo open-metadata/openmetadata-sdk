@@ -60,7 +60,7 @@ func (b *HTTPBackend) Call(ctx context.Context, method, path string, body []byte
 		req.URL.RawQuery = params.Encode()
 	}
 
-	rawBody, err := b.dispatchWithRetry(req)
+	rawBody, err := b.dispatchWithRetry(req, body)
 	if err != nil {
 		return nil, err
 	}
@@ -68,12 +68,15 @@ func (b *HTTPBackend) Call(ctx context.Context, method, path string, body []byte
 	return rawBody, nil
 }
 
-func (b *HTTPBackend) dispatchWithRetry(req *http.Request) ([]byte, error) {
-	retries := b.config.Retry
+func (b *HTTPBackend) dispatchWithRetry(req *http.Request, body []byte) ([]byte, error) {
+	retries := b.config.Retry + 1 // Initial attempt + retries
 	var resp *http.Response
 	var err error
 
 	for retries > 0 {
+		if body != nil {
+			req.Body = io.NopCloser(bytes.NewReader(body))
+		}
 		resp, err = b.httpClient.Do(req)
 		if err != nil {
 			return nil, fmt.Errorf("openmetadata: request failed: %w", err)
