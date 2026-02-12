@@ -20,7 +20,7 @@ func createTestTopic(t *testing.T, ctx context.Context, name string) *ometa.Topi
 	}
 
 	t.Cleanup(func() {
-		client.Topics.DeleteByName(ctx, *topic.FullyQualifiedName, &ometa.DeleteTopicByFQNParams{
+		_ = client.Topics.DeleteByName(ctx, *topic.FullyQualifiedName, &ometa.DeleteTopicByFQNParams{
 			HardDelete: ometa.Bool(true),
 		})
 	})

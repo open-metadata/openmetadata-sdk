@@ -19,7 +19,7 @@ func createTestTeam(t *testing.T, ctx context.Context, name string) *ometa.Team 
 	}
 
 	t.Cleanup(func() {
-		client.Teams.DeleteByName(ctx, *team.FullyQualifiedName, &ometa.DeleteTeamByNameParams{
+		_ = client.Teams.DeleteByName(ctx, *team.FullyQualifiedName, &ometa.DeleteTeamByNameParams{
 			HardDelete: ometa.Bool(true),
 		})
 	})

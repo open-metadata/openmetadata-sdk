@@ -21,7 +21,7 @@ func createTestRole(t *testing.T, ctx context.Context, name string) *ometa.Role 
 	}
 
 	t.Cleanup(func() {
-		client.Roles.DeleteByName(ctx, *role.FullyQualifiedName, &ometa.DeleteRoleByNameParams{
+		_ = client.Roles.DeleteByName(ctx, *role.FullyQualifiedName, &ometa.DeleteRoleByNameParams{
 			HardDelete: ometa.Bool(true),
 		})
 	})

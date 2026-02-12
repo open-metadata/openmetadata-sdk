@@ -19,7 +19,7 @@ func createTestPipeline(t *testing.T, ctx context.Context, name string) *ometa.P
 	}
 
 	t.Cleanup(func() {
-		client.Pipelines.DeleteByName(ctx, *pipeline.FullyQualifiedName, &ometa.DeletePipelineByFQNParams{
+		_ = client.Pipelines.DeleteByName(ctx, *pipeline.FullyQualifiedName, &ometa.DeletePipelineByFQNParams{
 			HardDelete: ometa.Bool(true),
 		})
 	})

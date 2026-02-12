@@ -26,7 +26,7 @@ func createTestPolicy(t *testing.T, ctx context.Context, name string) *ometa.Pol
 	}
 
 	t.Cleanup(func() {
-		client.Policies.DeleteByName(ctx, *policy.FullyQualifiedName, &ometa.DeletePolicyByFQNParams{
+		_ = client.Policies.DeleteByName(ctx, *policy.FullyQualifiedName, &ometa.DeletePolicyByFQNParams{
 			HardDelete: ometa.Bool(true),
 		})
 	})

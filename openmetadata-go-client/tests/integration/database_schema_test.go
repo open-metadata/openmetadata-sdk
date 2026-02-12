@@ -21,7 +21,7 @@ func createTestDatabaseSchema(t *testing.T, ctx context.Context, name string) *o
 	}
 
 	t.Cleanup(func() {
-		client.DatabaseSchemas.DeleteByName(ctx, *schema.FullyQualifiedName, &ometa.DeleteDBSchemaByFQNParams{
+		_ = client.DatabaseSchemas.DeleteByName(ctx, *schema.FullyQualifiedName, &ometa.DeleteDBSchemaByFQNParams{
 			HardDelete: ometa.Bool(true),
 			Recursive:  ometa.Bool(true),
 		})

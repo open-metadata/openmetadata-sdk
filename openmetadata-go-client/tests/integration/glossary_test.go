@@ -19,7 +19,7 @@ func createTestGlossary(t *testing.T, ctx context.Context, name string) *ometa.G
 	}
 
 	t.Cleanup(func() {
-		client.Glossaries.DeleteByName(ctx, *glossary.FullyQualifiedName, &ometa.DeleteGlossaryByNameParams{
+		_ = client.Glossaries.DeleteByName(ctx, *glossary.FullyQualifiedName, &ometa.DeleteGlossaryByNameParams{
 			HardDelete: ometa.Bool(true),
 			Recursive:  ometa.Bool(true),
 		})
@@ -43,7 +43,7 @@ func createTestGlossaryTerm(t *testing.T, ctx context.Context, name string) (*om
 	}
 
 	t.Cleanup(func() {
-		client.GlossaryTerms.DeleteByName(ctx, *term.FullyQualifiedName, &ometa.DeleteGlossaryTermByNameParams{
+		_ = client.GlossaryTerms.DeleteByName(ctx, *term.FullyQualifiedName, &ometa.DeleteGlossaryTermByNameParams{
 			HardDelete: ometa.Bool(true),
 		})
 	})

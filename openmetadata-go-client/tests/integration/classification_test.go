@@ -19,7 +19,7 @@ func createTestClassification(t *testing.T, ctx context.Context, name string) *o
 	}
 
 	t.Cleanup(func() {
-		client.Classifications.DeleteByName(ctx, *cls.FullyQualifiedName, &ometa.DeleteClassificationByNameParams{
+		_ = client.Classifications.DeleteByName(ctx, *cls.FullyQualifiedName, &ometa.DeleteClassificationByNameParams{
 			HardDelete: ometa.Bool(true),
 		})
 	})

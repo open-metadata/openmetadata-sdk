@@ -97,7 +97,7 @@ func (b *HTTPBackend) dispatchWithRetry(req *http.Request) ([]byte, error) {
 	if resp.StatusCode >= 400 {
 		apiErr := &APIError{StatusCode: resp.StatusCode}
 		if len(rawBody) > 0 {
-			json.Unmarshal(rawBody, apiErr)
+			_ = json.Unmarshal(rawBody, apiErr)
 		}
 		if apiErr.Message == "" {
 			apiErr.Message = http.StatusText(resp.StatusCode)

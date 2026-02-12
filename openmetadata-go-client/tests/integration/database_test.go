@@ -19,7 +19,7 @@ func createTestDatabase(t *testing.T, ctx context.Context, name string) *ometa.D
 	}
 
 	t.Cleanup(func() {
-		client.Databases.DeleteByName(ctx, *db.FullyQualifiedName, &ometa.DeleteDatabaseByFQNParams{
+		_ = client.Databases.DeleteByName(ctx, *db.FullyQualifiedName, &ometa.DeleteDatabaseByFQNParams{
 			HardDelete: ometa.Bool(true),
 			Recursive:  ometa.Bool(true),
 		})

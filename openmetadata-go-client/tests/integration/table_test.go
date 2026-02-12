@@ -24,7 +24,7 @@ func createTestTable(t *testing.T, ctx context.Context, name string) *ometa.Tabl
 	}
 
 	t.Cleanup(func() {
-		client.Tables.DeleteByName(
+		_ = client.Tables.DeleteByName(
 			ctx,
 			*table.FullyQualifiedName,
 			&ometa.DeleteTable1Params{
@@ -195,7 +195,7 @@ func TestListTableVersions(t *testing.T) {
 	ctx := context.Background()
 	table := createTestTable(t, ctx, "test_versions")
 
-	client.Tables.Patch(ctx, table.Id.String(), []ometa.JSONPatchOp{
+	_, _ = client.Tables.Patch(ctx, table.Id.String(), []ometa.JSONPatchOp{
 		{Op: "add", Path: "/description", Value: "v2"},
 	})
 
@@ -238,7 +238,7 @@ func TestRestoreTable(t *testing.T) {
 	}
 
 	t.Cleanup(func() {
-		client.Tables.DeleteByName(
+		_ = client.Tables.DeleteByName(
 			ctx,
 			fmt.Sprintf("%s.test_restore", testSchema),
 			&ometa.DeleteTable1Params{HardDelete: ometa.Bool(true)},

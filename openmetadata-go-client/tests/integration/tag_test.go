@@ -22,7 +22,7 @@ func createTestTag(t *testing.T, ctx context.Context, name string) (*ometa.Tag, 
 	}
 
 	t.Cleanup(func() {
-		client.Tags.DeleteByName(ctx, *tag.FullyQualifiedName, &ometa.DeleteTagByNameParams{
+		_ = client.Tags.DeleteByName(ctx, *tag.FullyQualifiedName, &ometa.DeleteTagByNameParams{
 			HardDelete: ometa.Bool(true),
 		})
 	})

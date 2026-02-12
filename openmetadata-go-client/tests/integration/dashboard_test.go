@@ -19,7 +19,7 @@ func createTestDashboard(t *testing.T, ctx context.Context, name string) *ometa.
 	}
 
 	t.Cleanup(func() {
-		client.Dashboards.DeleteByName(ctx, *dashboard.FullyQualifiedName, &ometa.DeleteDashboardByFQNParams{
+		_ = client.Dashboards.DeleteByName(ctx, *dashboard.FullyQualifiedName, &ometa.DeleteDashboardByFQNParams{
 			HardDelete: ometa.Bool(true),
 		})
 	})

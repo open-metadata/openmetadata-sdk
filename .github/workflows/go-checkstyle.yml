@@ -1,0 +1,70 @@
+name: Go Checkstyle
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+        - main
+        - 'v[0-9]+.[0-9]+.[0-9]+'
+  pull_request_target:
+    types: [labeled, opened, synchronize, reopened]
+    paths:
+      - "openmetadata-go-client/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: go-checkstyle-${{ github.head_ref }}
+  cancel-in-progress: true
+
+jobs:
+  go-checkstyle:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+
+    steps:
+      - name: Verify PR labels
+        uses: jesusvasquez333/verify-pr-label-action@v1.4.0
+        if: ${{ github.event_name == 'pull_request_target' }}
+        with:
+          github-token: '${{ secrets.GITHUB_TOKEN }}'
+          valid-labels: 'safe to test'
+          pull-request-number: '${{ github.event.pull_request.number }}'
+          disable-reviews: true
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.24.x'
+
+      - name: Run golangci-lint
+        id: lint
+        continue-on-error: true
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: latest
+          working-directory: openmetadata-go-client
+
+      - name: Create a comment in the PR with the instructions
+        if: steps.lint.outcome != 'success'
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            **The Go checkstyle failed.**
+
+            Please run `make go_lint_fix` in the root of your repository and commit the changes to this PR.
+
+            You can also run `make go_lint` to check for issues without auto-fixing.
+
+      - name: Go checkstyle failed, check the comment in the PR
+        if: steps.lint.outcome != 'success'
+        run: |
+          exit 1

@@ -19,7 +19,7 @@ func createTestUser(t *testing.T, ctx context.Context, name string) *ometa.User 
 	}
 
 	t.Cleanup(func() {
-		client.Users.DeleteByName(ctx, *user.FullyQualifiedName, &ometa.DeleteUserByNameParams{
+		_ = client.Users.DeleteByName(ctx, *user.FullyQualifiedName, &ometa.DeleteUserByNameParams{
 			HardDelete: ometa.Bool(true),
 		})
 	})
