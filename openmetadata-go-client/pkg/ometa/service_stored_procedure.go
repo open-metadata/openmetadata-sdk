@@ -43,7 +43,7 @@ func (s *StoredProcedureService) Delete(ctx context.Context, id string, params *
 	return del(ctx, s.backend, fmt.Sprintf("%s/%s", storedProcedureBasePath, id), params)
 }
 
-func (s *StoredProcedureService) DeleteByName(ctx context.Context, fqn string, params *DeleteDBSchemaByFQN1Params) error {
+func (s *StoredProcedureService) DeleteByName(ctx context.Context, fqn string, params *DeleteStoredProcedureParams) error {
 	return del(ctx, s.backend, fmt.Sprintf("%s/name/%s", storedProcedureBasePath, fqn), params)
 }
 
