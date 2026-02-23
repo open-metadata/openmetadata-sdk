@@ -37,7 +37,7 @@ jobs:
               env:
                 SDK_VERSION: ${{ inputs.sdk-version }}
               run: |
-                if ! echo "$SDK_VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.]+)?$'; then
+                if ! echo "$SDK_VERSION" | grep -qE '^v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.]+)?$'; then
                   echo "::error::sdk-version '$SDK_VERSION' is not valid semver"
                   exit 1
                 fi
@@ -46,7 +46,7 @@ jobs:
               env:
                 OM_BRANCH: ${{ inputs.om-branch }}
               run: |
-                if ! echo "$OM_BRANCH" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+-release$'; then
+                if ! echo "$OM_BRANCH" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
                   echo "::error::om-branch '$OM_BRANCH' does not match expected pattern (e.g. 1.6.2-release)"
                   exit 1
                 fi
