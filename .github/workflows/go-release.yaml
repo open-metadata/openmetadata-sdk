@@ -181,3 +181,9 @@ jobs:
                 \`\`\`
                 EOF
                 )"
+
+            - name: Trigger Go module proxy and pkg.go.dev indexing
+              env:
+                SDK_VERSION: ${{ inputs.sdk-version }}
+              run: |
+                GOPROXY=proxy.golang.org go list -m "github.com/open-metadata/openmetadata-sdk/openmetadata-go-client@v${SDK_VERSION}"
