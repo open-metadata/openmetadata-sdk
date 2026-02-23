@@ -140,17 +140,17 @@ jobs:
               run: |
                 cd openmetadata-sdk/openmetadata-go-client && go test ./tests/integration/ -v
 
-            - name: Commit generated models
+            - name: Commit generated models and push release branch
               env:
                 SDK_VERSION: ${{ inputs.sdk-version }}
-                REF_NAME: ${{ github.ref_name }}
               run: |
                 cd openmetadata-sdk
                 git config user.name "github-actions[bot]"
                 git config user.email "github-actions[bot]@users.noreply.github.com"
-                git add openmetadata-go-client/pkg/ometa/models.go
+                git checkout -b "go/v${SDK_VERSION}-release"
+                git add -f openmetadata-go-client/pkg/ometa/models.go
                 git commit -m "chore(go-sdk): generate models for v${SDK_VERSION}"
-                git push origin "HEAD:${REF_NAME}"
+                git push origin "go/v${SDK_VERSION}-release"
 
             - name: Create and push tag
               env:
