@@ -89,13 +89,19 @@ jobs:
               uses: actions/setup-go@v4
               with:
                 go-version: ${{ matrix.go-version }}
+            - name: Patch OpenAPI spec for Go codegen
+              run: |
+                cd openmetadata-sdk/openmetadata-go-client && go run scripts/patch_swagger.go \
+                  ${{ github.workspace }}/open-metadata/openmetadata-service/target/classes/assets/swagger.json \
+                  /tmp/swagger_patched.json
+
             - name: Generate models from OpenAPI spec
               run: |
                 cd openmetadata-sdk/openmetadata-go-client && go tool oapi-codegen \
                   -generate types \
                   -package ometa \
                   -o pkg/ometa/models.go \
-                  ${{ github.workspace }}/open-metadata/openmetadata-service/target/classes/assets/swagger.json
+                  /tmp/swagger_patched.json
             - name: Validate service coverage against swagger
               run: |
                 cd openmetadata-sdk/openmetadata-go-client && go test ./pkg/ometa/ \
