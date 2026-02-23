@@ -83,7 +83,7 @@ func (b *HTTPBackend) dispatchWithRetry(req *http.Request, body []byte) ([]byte,
 		}
 
 		if resp.StatusCode >= 400 && b.shouldRetry(resp.StatusCode) {
-			resp.Body.Close()
+			_ = resp.Body.Close()
 			retries--
 			time.Sleep(b.config.RetryWait)
 			continue
@@ -91,7 +91,7 @@ func (b *HTTPBackend) dispatchWithRetry(req *http.Request, body []byte) ([]byte,
 		break
 	}
 
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	rawBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("openmetadata: failed to read response body: %w", err)
