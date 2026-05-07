@@ -46,7 +46,7 @@ jobs:
               env:
                 OM_BRANCH: ${{ inputs.om-branch }}
               run: |
-                if ! echo "$OM_BRANCH" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+                if ! echo "$OM_BRANCH" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+-release$'; then
                   echo "::error::om-branch '$OM_BRANCH' does not match expected pattern (e.g. 1.6.2-release)"
                   exit 1
                 fi
