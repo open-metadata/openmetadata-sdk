@@ -48,6 +48,9 @@ func main() {
 	count := patchBareObjects(schemas)
 	fmt.Printf("Patched %d bare-object fields in swagger spec\n", count)
 
+	dtCount := patchDateTimeToEpochMillis(schemas)
+	fmt.Printf("Patched %d date-time fields to int64 (epoch millis) in swagger spec\n", dtCount)
+
 	out, err := json.MarshalIndent(spec, "", "  ")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to marshal JSON: %v\n", err)
@@ -121,6 +124,40 @@ func patchBareObjects(schemas map[string]interface{}) int {
 					propMap["items"] = map[string]interface{}{}
 					count++
 				}
+			}
+		}
+	}
+
+	return count
+}
+
+// patchDateTimeToEpochMillis converts all date-time properties to
+// integer/int64 so oapi-codegen generates *int64 instead of *time.Time.
+// The OpenMetadata API returns epoch milliseconds for these fields, which
+// causes time.Time.UnmarshalJSON to fail.
+func patchDateTimeToEpochMillis(schemas map[string]interface{}) int {
+	count := 0
+
+	for _, schemaDef := range schemas {
+		schemaMap, ok := schemaDef.(map[string]interface{})
+		if !ok {
+			continue
+		}
+		properties, ok := schemaMap["properties"].(map[string]interface{})
+		if !ok {
+			continue
+		}
+
+		for _, propValue := range properties {
+			propMap, ok := propValue.(map[string]interface{})
+			if !ok {
+				continue
+			}
+
+			if fmtVal, hasFmt := propMap["format"].(string); hasFmt && fmtVal == "date-time" {
+				propMap["type"] = "integer"
+				propMap["format"] = "int64"
+				count++
 			}
 		}
 	}
