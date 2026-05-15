@@ -1,5 +1,69 @@
 # OpenMetadata Go Client
 
+## Development
+
+### Prerequisites
+
+- Go 1.24+
+- Access to an OpenMetadata server (for the swagger spec)
+
+### Code Generation
+
+The `pkg/ometa/models.go` file is generated from the OpenMetadata swagger spec. To regenerate it:
+
+**1. Get the swagger spec** from a running OpenMetadata instance:
+
+```bash
+curl http://localhost:8585/api/swagger.json -o schemas/swagger.json
+```
+
+Or copy it out of a Docker container:
+
+```bash
+docker run --rm -d --name om-tmp openmetadata/server:1.6.2 sleep 30
+docker cp om-tmp:/opt/openmetadata/openmetadata-service/target/classes/assets/swagger.json ./schemas/swagger.json
+docker rm -f om-tmp
+```
+
+**2. Patch the spec** (converts bare objects and date-time fields to Go-friendly types):
+
+```bash
+go run scripts/patch_swagger.go schemas/swagger.json schemas/patched.json
+```
+
+**3. Generate models:**
+
+```bash
+go tool oapi-codegen \
+  -generate types \
+  -package ometa \
+  -o pkg/ometa/models.go \
+  schemas/patched.json
+```
+
+### Running Tests
+
+```bash
+# Unit tests
+make go_unit_tests
+
+# Patch script tests
+make go_patch_script_tests
+
+# Integration tests (requires a running OM server with OM_TEST_TOKEN set)
+make go_integration_tests
+
+# Run test suite
+make go_tests
+```
+
+### Linting
+
+```bash
+make go_lint       # check
+make go_lint_fix   # auto-fix
+```
+
 ## Installation
 
 ```bash

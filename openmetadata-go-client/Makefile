@@ -29,8 +29,13 @@ go_unit_tests:  ## Run go unit tests
 go_integration_tests:  ## Run go integration tests
 	cd $(ROOT_DIR)/$(GO_DIRECTORY) && go test -v ./tests/integration/
 
+.PHONE: go_patch_script_tests
+go_patch_script_tests:	## Run tests for the patching script
+	cd $(ROOT_DIR)/$(GO_DIRECTORY) && go test -v ./scripts/
+
 .PHONY: go_tests
 go_tests:  ## Run linter + all tests
 	$(MAKE) go_lint
 	$(MAKE) go_unit_tests
+	$(MAKE) go_patch_script_tests
 	$(MAKE) go_integration_tests
