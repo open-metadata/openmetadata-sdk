@@ -87,6 +87,23 @@ func isBareObject(v interface{}) bool {
 	return ok && t == "object"
 }
 
+// walkSchema recursively visits every schema node in the tree, calling fn on
+// each map[string]interface{} encountered. This covers properties, allOf/anyOf/oneOf
+// entries, array items, and any other inline schema.
+func walkSchema(node interface{}, fn func(m map[string]interface{})) {
+	switch v := node.(type) {
+	case map[string]interface{}:
+		fn(v)
+		for _, child := range v {
+			walkSchema(child, fn)
+		}
+	case []interface{}:
+		for _, elem := range v {
+			walkSchema(elem, fn)
+		}
+	}
+}
+
 // patchBareObjects removes "type": "object" from properties that are bare objects
 // (no "properties", "$ref", "additionalProperties", etc.). These represent free-form
 // values in the OpenMetadata API.
@@ -96,36 +113,31 @@ func patchBareObjects(schemas map[string]interface{}) int {
 	count := 0
 
 	for _, schemaDef := range schemas {
-		schemaMap, ok := schemaDef.(map[string]interface{})
-		if !ok {
-			continue
-		}
-		properties, ok := schemaMap["properties"].(map[string]interface{})
-		if !ok {
-			continue
-		}
-
-		for propName, propValue := range properties {
-			propMap, ok := propValue.(map[string]interface{})
+		walkSchema(schemaDef, func(m map[string]interface{}) {
+			props, ok := m["properties"].(map[string]interface{})
 			if !ok {
-				continue
+				return
 			}
+			for propName, propValue := range props {
+				propMap, ok := propValue.(map[string]interface{})
+				if !ok {
+					continue
+				}
 
-			// Case 1: property is exactly {"type": "object"}
-			if isBareObject(propValue) {
-				properties[propName] = map[string]interface{}{}
-				count++
-				continue
-			}
-
-			// Case 2: property is {"type": "array", "items": {"type": "object"}}
-			if t, _ := propMap["type"].(string); t == "array" {
-				if isBareObject(propMap["items"]) {
-					propMap["items"] = map[string]interface{}{}
+				if isBareObject(propValue) {
+					props[propName] = map[string]interface{}{}
 					count++
+					continue
+				}
+
+				if t, _ := propMap["type"].(string); t == "array" {
+					if isBareObject(propMap["items"]) {
+						propMap["items"] = map[string]interface{}{}
+						count++
+					}
 				}
 			}
-		}
+		})
 	}
 
 	return count
@@ -135,31 +147,20 @@ func patchBareObjects(schemas map[string]interface{}) int {
 // integer/int64 so oapi-codegen generates *int64 instead of *time.Time.
 // The OpenMetadata API returns epoch milliseconds for these fields, which
 // causes time.Time.UnmarshalJSON to fail.
+//
+// Walks the entire schema tree so fields nested inside allOf/anyOf/oneOf or
+// inline object properties are also patched.
 func patchDateTimeToEpochMillis(schemas map[string]interface{}) int {
 	count := 0
 
 	for _, schemaDef := range schemas {
-		schemaMap, ok := schemaDef.(map[string]interface{})
-		if !ok {
-			continue
-		}
-		properties, ok := schemaMap["properties"].(map[string]interface{})
-		if !ok {
-			continue
-		}
-
-		for _, propValue := range properties {
-			propMap, ok := propValue.(map[string]interface{})
-			if !ok {
-				continue
-			}
-
-			if fmtVal, hasFmt := propMap["format"].(string); hasFmt && fmtVal == "date-time" {
-				propMap["type"] = "integer"
-				propMap["format"] = "int64"
+		walkSchema(schemaDef, func(m map[string]interface{}) {
+			if fmtVal, ok := m["format"].(string); ok && fmtVal == "date-time" {
+				m["type"] = "integer"
+				m["format"] = "int64"
 				count++
 			}
-		}
+		})
 	}
 
 	return count
